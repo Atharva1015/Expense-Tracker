@@ -15,29 +15,22 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-  TableFooter,
   TableCaption,
 } from "@/components/ui/table"
 import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import axios from "axios"
-import { Users } from "lucide-react"
-import { ArrowUpDown, CalendarIcon, MoreHorizontal, SlidersHorizontal } from "lucide-react"
+import { ArrowUpDown,  MoreHorizontal } from "lucide-react"
 import { format, toZonedTime } from 'date-fns-tz'
-import { headers } from "next/headers"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
 import { ChartArea } from "../components/custom/Chart-Area"
 import { ExpensePieChart } from "@/app/user/components/custom/Pie-Chart"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-
 
 
 
@@ -82,14 +75,11 @@ export default function Page() {
     const getData = async () => {
       try {
 
-        const response = await axios.get("http://localhost:8080/api/admin/users", {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/users`, {
           withCredentials: true
         });
-
-
         const data = response.data;
         setUsers(data)
-        console.log("Here: - " + data)
 
 
       } catch (error) {
@@ -102,7 +92,7 @@ export default function Page() {
   // Delete Users
   const handleDelete = async (id: number) => {
     try {
-      const response = await axios.delete(`http://localhost:8080/api/admin/delete/${id}`, {
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/admin/delete/${id}`, {
         data: { id },
         withCredentials: true
       });
@@ -132,7 +122,6 @@ export default function Page() {
 
   }
 
-  const [userChartData, setUserChartData] = useState([]);
   const [adminDashboardData, setAdminDashboardData] = useState<AdminDashboardResponse>();
   const [days, setDays] = useState("30");
   const [selectedRange, setSelectedRange] = useState("30");
@@ -140,9 +129,8 @@ export default function Page() {
   useEffect(() => {
     const fetchUserChartData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/user/admin/expenses/dashboard?days=${days}`, { withCredentials: true })
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/user/admin/expenses/dashboard?days=${days}`, { withCredentials: true })
 
-        console.log("Admin API response:", response.data);
         setAdminDashboardData(response.data);
 
       } catch (error) {
@@ -277,7 +265,6 @@ export default function Page() {
   const piechartData = adminDashboardData?.totalCategoriesChart || [];
 
 
-  console.log("Transformed Data: - " + adminDashboardData?.totalCategoriesChart)
   const table = useReactTable({
     data: users,
     columns,

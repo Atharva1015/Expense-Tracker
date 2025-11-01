@@ -9,8 +9,6 @@ const roleToPath: Record<string, string> = {
   users: "/user/dashboard"
 };
 
-const loginPaths = ["/user/login", "/admin/login"];
-const isLoginPath = loginPaths.includes(path);
 const isPrivate =
   path.startsWith("/user/dashboard") ||
   path.startsWith("/admin/dashboard");
@@ -45,17 +43,21 @@ try {
     // }
 
     // Role-based route protection: redirect if mismatched paths, but exclude target path
-    console.log("Path "+path)
-    if (isPrivate && !path.startsWith(basePath)) {
-          const response = NextResponse.redirect(new URL("/", request.url));
-          response.cookies.delete("token"); // clear token
-          return response;
-        }
+     if (path.startsWith("/admin") && role !== "admin") {
+      return NextResponse.redirect(new URL("/user/dashboard", request.url));
+    }
+
+    if (path.startsWith("/user") && role !== "users") {
+      return NextResponse.redirect(new URL("/admin/dashboard", request.url));
+    }
+
+    return NextResponse.next();
 
     return NextResponse.next();
   }
 } catch (error) {
   const res = NextResponse.redirect(new URL("/login", request.url));
+  console.log("In middleWare Baby!!")
   res.cookies.delete("jwtToken");
   return res;
 }
@@ -76,7 +78,6 @@ export const config = {
     '/user/:path*',
     '/admin/:path*',
     '/dashboard/:path*',
-    '/api/:path*',
     '/login',
     '/user'
   ],

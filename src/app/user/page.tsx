@@ -15,23 +15,17 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-    TableFooter,
     TableCaption,
 } from "@/components/ui/table"
 import {
-    ColumnFiltersState,
-    SortingState,
-    VisibilityState,
     getFilteredRowModel,
     getPaginationRowModel,
     getSortedRowModel,
 } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import axios from "axios"
-import { Users } from "lucide-react"
-import { ArrowUpDown, CalendarIcon, MoreHorizontal, SlidersHorizontal } from "lucide-react"
+import { ArrowUpDown} from "lucide-react"
 import { format, toZonedTime } from 'date-fns-tz'
-import { headers } from "next/headers"
 
 
 export default function Page() {
@@ -46,7 +40,6 @@ export default function Page() {
     useEffect(() => {
         const getData = async () => {
             try {
-                const token = localStorage.getItem("jwtToken");
                 const response = await axios.get('http://localhost:8080/api/admin/users', {
   withCredentials: true
 });

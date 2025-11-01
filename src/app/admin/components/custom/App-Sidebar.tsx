@@ -1,6 +1,6 @@
 'use client';
 
-import { Home, Settings, UserRoundSearch, Wrench } from "lucide-react"
+import { Home, UserRoundSearch } from "lucide-react"
 
 import {
   Sidebar,
@@ -19,8 +19,7 @@ import { useRouter } from "next/navigation"
 import axios, { AxiosResponse } from "axios";
 import React from "react";
 import Link from "next/link";
-import { title } from "process";
-import { ur } from "zod/v4/locales";
+
 
 // Menu items.
 const items = [
@@ -44,7 +43,7 @@ export const AppSidebar = () => {
 
   const handleLogout = async () => {
     try {
-      const response: AxiosResponse = await axios.post('http://localhost:8080/api/auth/logout');
+      const response: AxiosResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/logout`);
       const data = response.data
       if (data && response.status === 200) {
         toast.success(data.message || "Logout successful", {
@@ -55,10 +54,12 @@ export const AppSidebar = () => {
           },
           duration: 1500
         });
-
+        // Clear frontend storage
+        localStorage.clear();
+        sessionStorage.clear();
         window.localStorage.removeItem("name");
         window.localStorage.removeItem("email");
-        router.push('/user/login');
+        router.push('/admin/login');
       }
     } catch (error) {
       console.error("Error on Logout", error);

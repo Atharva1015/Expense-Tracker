@@ -1,67 +1,25 @@
 "use client"
 import * as React from "react"
 import { useState, useEffect } from "react"
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableFooter,
-  TableCaption,
-} from "@/components/ui/table"
-import {
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-} from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 import axios, { AxiosResponse } from "axios"
 
-import { ArrowUpDown, Calendar, CalendarIcon, Edit, Eye, FileText, IndianRupee, MoreHorizontal, MoreVertical, Plus, SlidersHorizontal, Trash2 } from "lucide-react"
-import { format, toZonedTime } from 'date-fns-tz'
+import {Calendar, Edit, Eye, FileText, IndianRupee, MoreVertical, Plus, Trash2 } from "lucide-react"
 import { ChartArea } from "../components/custom/Chart-Area"
 import { Input } from "@/components/ui/input"
-import { DialogHeader, DialogFooter } from "@/components/ui/dialog"
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
-import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogClose } from "@/components/ui/dialog"
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuItem } from "@/components/ui/dropdown-menu"
-import { Form, FormProvider, useForm } from "react-hook-form"
+import { DialogHeader} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
-import z, { number } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { add, formatDate } from "date-fns"
 import { ExpensePieChart } from "../components/custom/Pie-Chart"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
-const ExpenseSchema = z.object({
-  title: z.string().min(1, {
-    message: "Expense title is required"
-  }),
-  category: z.string().min(1, {
-    message: "Please select a category 🙂!"
-  }),
-  note: z.string(),
-  amount: z.string(),
-  createdAt: z.string(),
-});
+
 
 
 export default function Page() {
-  const timeZone = 'Asia/Kolkata';
   type Expense = {
     id: number,
     category: "",
@@ -109,7 +67,7 @@ export default function Page() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/user/myExpenses", {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/user/myExpenses`, {
           withCredentials: true
         })
         const data = response.data;
@@ -126,7 +84,7 @@ export default function Page() {
   useEffect(() => {
     const getTotal = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/user/getTotal", { withCredentials: true })
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/user/getTotal`, { withCredentials: true })
         const data = response.data;
         setTotal(data)
       } catch (error) {
@@ -140,7 +98,7 @@ export default function Page() {
   // Delete Expense
   const handleDelete = async (id: number) => {
     try {
-      const response = await axios.delete(`http://localhost:8080/api/user/deleteExpense/${id}`, {
+      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/user/deleteExpense/${id}`, {
         data: { id },
         withCredentials: true
       });
@@ -174,7 +132,7 @@ export default function Page() {
   // To add new expense!
   const handleAdd = async () => {
     try {
-      const response: AxiosResponse = await axios.post("http://localhost:8080/api/user/createExpense", expenseForm, { withCredentials: true });
+      const response: AxiosResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/user/createExpense`, expenseForm, { withCredentials: true });
 
       console.log("After adding the expense: - " + response.status)
       setOpen(false)
@@ -234,6 +192,11 @@ export default function Page() {
       }
     }
   }
+interface ChartDataPoint {
+  date: string;
+  amount: number;
+  // formattedDate?: string; // For display purposes
+}
 
   // To fetch data based on dates!
   const [userChartData, setUserChartData] = useState([]);
@@ -242,10 +205,10 @@ export default function Page() {
 
     const fetchUserChartData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/user/expenses/dashboard?days=${days}`, { withCredentials: true })
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/user/expenses/dashboard?days=${days}`, { withCredentials: true })
         setUserChartData(
           (() => {
-            const chart = response.data.chartData.map((d: any) => ({
+            const chart = response.data.chartData.map((d: ChartDataPoint) => ({
               date: new Date(d.date).toISOString(),
               amount: Number(d.amount)
             }))
@@ -328,7 +291,7 @@ export default function Page() {
 
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/user/expenses/category",
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/user/expenses/category`,
           { withCredentials: true })
         console.log(response.data)
         setCategoryData(response.data)

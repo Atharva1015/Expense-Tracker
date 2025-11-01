@@ -4,27 +4,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback} from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { User, Mail, Calendar, IndianRupee, Palette, Shield, Download, Edit3 } from 'lucide-react';
+import { User, Mail, Calendar, IndianRupee, Edit3 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
-import { title } from "process";
-import { ur } from "zod/v4/locales";
-import { Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-export default function ModernProfilePage() {
-  const { setTheme } = useTheme()
 
-  const [isDarkMode, setIsDarkMode] = useState(true);
+export default function ModernProfilePage() {
+
   const [userInfo, setUserInfo] = useState({
     name: '',
     email: '',
@@ -54,11 +42,11 @@ export default function ModernProfilePage() {
     const fetchData = async () => {
       try {
 
-        const response = await axios.get(`http://localhost:8080/api/user/profile/stats`, { withCredentials: true })
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/user/profile/stats`, { withCredentials: true })
         console.log(response.data)
         setUserInfo(response.data);
       } catch (error) {
-        console.log("Something went wrong while fetching the user data!!")
+        console.log("Something went wrong while fetching the user data!!",error)
       }
     }
     fetchData();
@@ -79,7 +67,11 @@ export default function ModernProfilePage() {
 
   const handleUpdateProfile = async () => {
     try {
-      const payload: any = {}
+      const payload  = {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      }
       if (formData.name && formData.name.trim() !== "") {
         payload.name = formData.name
       }
@@ -90,7 +82,7 @@ export default function ModernProfilePage() {
         payload.password = formData.password
       }
       const response = await axios.put(
-        "http://localhost:8080/api/user/update",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/user/update`,
         payload,
         { withCredentials: true }
       );

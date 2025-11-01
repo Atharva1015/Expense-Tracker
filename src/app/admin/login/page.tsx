@@ -6,7 +6,7 @@ import React from 'react'
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import axios, { AxiosResponse } from "axios"
+import axios from "axios"
 import { useRouter } from 'next/navigation'
 
 // UI Components import
@@ -48,15 +48,19 @@ const Page = () => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
+        // localStorage.clear();
+        // sessionStorage.clear();
             const response = await axios.post(
-                'http://localhost:8080/api/user/login',
-                values,
-                {
-                    withCredentials: true, // crucial for cookie exchange
+                `${process.env.NEXT_PUBLIC_API_URL}/api/user/login`,
+                values, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                withCredentials:true, 
                 }
             );
             const data = response.data;
-            if (response.status === 200) {
+            if (response.status === 200 || response.status===201) {
                 console.log("Front end data", values);
                 window.localStorage.setItem("name", data.name);
                 window.localStorage.setItem("email", data.email);
@@ -85,7 +89,7 @@ const Page = () => {
                     })
                     form.resetField('password');
                 } else if (status === 404) {
-                    toast.error(data.error || "Technician not found", {
+                    toast.error(data.error || "Admin not found", {
                         style: {
                             "backgroundColor": "#FADBD8",
                             "color": "black",
@@ -95,6 +99,7 @@ const Page = () => {
                     });
                     form.reset();
                 } else {
+                    console.log("In else statement")
                     toast.error(data.error || "Some Error Occured", {
                         style: {
                             "backgroundColor": "#FADBD8",

@@ -49,17 +49,17 @@ const Page = () => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const response: AxiosResponse = await axios.post('http://localhost:8080/api/user/login', values, {
+
+            const response: AxiosResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/user/login`, values, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                withCredentials:true,
+                withCredentials: true,
             });
             const data = response.data;
-            if (response.status === 200 || response.status ===201) {
+            if (response.status === 200 || response.status === 201) {
                 // window.localStorage.setItem("name", data.name);
                 // window.localStorage.setItem("email", data.email);
-                console.log("At least entered here cutie!!")
                 toast.success(data.message || "Login successful!", {
                     style: {
                         "backgroundColor": "#D5F5E3",
@@ -68,8 +68,9 @@ const Page = () => {
                     },
                     duration: 1000
                 });
+                console.log("In front end!!")
                 form.reset();
-router.replace('/user/dashboard');
+                router.push('/user/dashboard');
             }
         } catch (error) {
             if (axios.isAxiosError(error) && error.response) {
@@ -165,12 +166,12 @@ max-md:h-fit max-md:w-fit">
                                     </div>
                                 </form>
                                 <p className="pt-3 flex justify-center items-center text-sm text-muted-foreground max-md:w-full">
-  Don't have an account?
-                                    <a onClick={()=>{router.push("/user/register")}} className="ml-2 inline-flex items-center gap-1 text-primary font-medium hover:underline hover:text-primary/80 transition-colors duration-150 cursor-pointer">
-   <ArrowRight className="h-4 w-4" />Register
- 
-</a>
-</p>
+                                    Don&epos;t have an account?
+                                    <a onClick={() => { router.push("/user/register") }} className="ml-2 inline-flex items-center gap-1 text-primary font-medium hover:underline hover:text-primary/80 transition-colors duration-150 cursor-pointer">
+                                        <ArrowRight className="h-4 w-4" />Register
+
+                                    </a>
+                                </p>
                             </Form>
                         </CardContent>
                     </Card>

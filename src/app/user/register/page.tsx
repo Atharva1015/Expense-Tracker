@@ -52,7 +52,7 @@ const Page = () => {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log("Cliked!!")
         try {
-            const response: AxiosResponse = await axios.post('http://localhost:8080/api/user/register', values, {
+            const response: AxiosResponse = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/user/register`, values, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -179,7 +179,7 @@ max-md:h-fit max-md:w-fit">
                                     </div>
                                 </form>
                                 <p className="pt-3 flex justify-center items-center text-sm text-muted-foreground max-md:w-full">
-  Don't have an account?
+  Don&epos;t have an account?
                                     <a onClick={()=>{router.push("/user/login")}} className="ml-2 inline-flex items-center gap-1 text-primary font-medium hover:underline hover:text-primary/80 transition-colors duration-150 cursor-pointer">
    <ArrowRight className="h-4 w-4" />
                                         Login

@@ -1,6 +1,6 @@
 // components/ExpensePieChart.tsx
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { Card, CardContent, CardDescription, CardHeader} from "@/components/ui/card"
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Label, Legend, Pie, PieChart, Sector } from "recharts"
 import { useMemo, useState } from "react"
 import {
@@ -10,6 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { PieSectorDataItem } from "recharts/types/polar/Pie";
+
 interface ExpenseCategoryData {
   category: string;
   amount: number;
@@ -39,16 +41,20 @@ export function ExpensePieChart({
   description = "Breakdown of your spending by category",
   height = "400px"
 }: ExpensePieChartProps) {
-  const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
+interface ChartConfigEntry {
+  label: string
+  color: string
+}
 
+type ChartConfig = Record<string, ChartConfigEntry>
   // Create chart config dynamically based on data
-  const chartConfig = data.reduce((config, item, index) => {
+  const chartConfig = data.reduce<ChartConfig>((config, item, index) => {
     config[item.category.toLowerCase()] = {
       label: item.category,
       color: COLORS[index % COLORS.length]
     };
     return config;
-  }, {} as any);
+  }, {});
 
   // // Transform data for the chart (add colors)
   // const chartData = data.map((item, index) => ({
@@ -122,7 +128,7 @@ export function ExpensePieChart({
                 nameKey="category"
                 innerRadius={60}
                 strokeWidth={5}
-                activeShape={(props: any) => {
+                activeShape={(props: PieSectorDataItem) => {
                   const { outerRadius = 0 } = props
                   return (
                     <g>
